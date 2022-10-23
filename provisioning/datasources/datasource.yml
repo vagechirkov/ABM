@@ -1,0 +1,15 @@
+# SEE: https://medium.com/swlh/easy-grafana-and-docker-compose-setup-d0f6f9fcec13
+# SEE: https://github.com/jkehres/docker-compose-influxdb-grafana
+apiVersion: 1
+datasources:
+  - name: InfluxDB_v2_Flux
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    secureJsonData:
+      token: 5up3r-S3cr3t-auth-t0k3n
+    jsonData:
+      version: Flux
+      organization: influxdata-org
+      defaultBucket: default
+      tlsSkipVerify: true
