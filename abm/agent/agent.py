@@ -57,26 +57,33 @@ class Agent(pygame.sprite.Sprite):
         self.exclude_agents_same_patch = patchwise_exclusion
         self.id = id  # saved
         # creating agent status
+        # todo: mutually exclusive states mean that agents can not signal while relocate
         self.agent_type = "mars_miner"
         self.meter = 0  # between 0 and 1
-        self.prev_meter = 0
-        self.theta_prev = 0
-        self.taxis_dir = None
+        self.prev_meter = 0  # for phototaxis
+        self.theta_prev = 0  # turning angle in prev timestep
+        self.taxis_dir = None  # phototaxis direction [-1, 1, None]
 
-        self.phototaxis_theta_step = phototaxis_theta_step  # 0.2
-        self.detection_range = detection_range  # 120
-        self.resource_meter_multiplier = resource_meter_multiplier  # 1
-        self.signalling_cost = signalling_cost  # 0.5
+        # maximum turning angle during phototaxis
+        self.phototaxis_theta_step = phototaxis_theta_step
+        self.detection_range = detection_range
+        # for unit detected resource value how much resource should I gain
+        self.resource_meter_multiplier = resource_meter_multiplier
+        self.signalling_cost = signalling_cost
         self.radius = radius
-        self.position = np.array(position, dtype=np.float64)  # saved
+        self.position = np.array(position, dtype=np.float64)  # of upper left corner
         self.orientation = orientation  # saved
         self.color = color
-        self.selected_color = colors.LIGHT_BLUE
-        self.v_field_res = v_field_res
-        self.pooling_time = pooling_time
-        self.pooling_prob = pooling_prob
-        self.consumption = consumption
         self.vision_range = vision_range
+
+        self.selected_color = colors.LIGHT_BLUE
+
+        self.v_field_res = v_field_res
+
+        self.pooling_time = pooling_time  # not used
+        self.pooling_prob = pooling_prob  # not used
+        self.consumption = consumption  # not used
+
         self.visual_exclusion = visual_exclusion
         self.FOV = FOV
         self.show_stats = False
@@ -85,11 +92,14 @@ class Agent(pygame.sprite.Sprite):
         self.velocity = 0  # agent absolute velocity  # saved
         self.collected_r = 0  # collected resource unit collected by agent  # saved
         self.collected_r_before = 0  # collected resource in the previous time step to monitor patch quality
-        self.exploited_patch_id = -1  # saved
+
+        self.exploited_patch_id = -1  # not used
+
         self.mode = "explore"  # explore, flock, collide, exploit, pool  # saved
         self.soc_v_field = np.zeros(self.v_field_res)  # social visual projection field
         self.target_field = np.zeros(self.v_field_res)  # social visual projection field
         # source data to calculate relevant visual field according to the used relocation force algorithm
+
         self.vis_field_source_data = {}
 
         # Interaction
@@ -279,7 +289,7 @@ class Agent(pygame.sprite.Sprite):
             # boundary conditions if applicable
             self.reflect_from_walls()
         else:
-            self.agent_type = "signalling"
+            #self.agent_type = "signalling"
             print(self.meter)
 
         # updating agent visualization
